@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const cors = require('cors');
 const port = process.env.PORT || 5000;
@@ -31,6 +31,18 @@ async function run() {
         app.get("/clients", async (req, res) => {
             const result = await clientsCollection.find().toArray();
             res.send(result);
+        })
+
+        app.get('/clients/:id', async (req, res) => {
+            const id = await req.params.id;
+            const client_id = { _id: new ObjectId(id) };
+            const clientInfo = await clientsCollection.findOne(client_id)
+            // console.log(id);
+
+            if (!clientInfo) {
+                return res.status(404).json({ error: "User not found" }); // Return 404 if no user is found
+            }
+            return res.json(clientInfo)
         })
 
         // Send a ping to confirm a successful connection
