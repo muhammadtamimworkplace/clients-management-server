@@ -28,6 +28,15 @@ async function run() {
 
         const clientsCollection = client.db("clients_management").collection("clients");
 
+        // Add a New Clinet
+        app.post('/clients', async (req, res) => {
+            const NewClient = req.body;
+            console.log("New User", NewClient);
+            const result = await clientsCollection.insertOne(NewClient)
+            res.send(result)
+
+        })
+
         app.get("/clients", async (req, res) => {
             const result = await clientsCollection.find().toArray();
             res.send(result);
@@ -38,6 +47,7 @@ async function run() {
             const client_id = { _id: new ObjectId(id) };
             const clientInfo = await clientsCollection.findOne(client_id)
             // console.log(id);
+
 
             if (!clientInfo) {
                 return res.status(404).json({ error: "User not found" }); // Return 404 if no user is found
